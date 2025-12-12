@@ -1,0 +1,42 @@
+/* Import Poppins and Inter fonts from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Ensure Poppins is applied globally */
+body {
+  font-family: 'Poppins', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Tab Navigation specific styles */
+.tab-navigation {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Pill Card specific styles */
+.pill-card {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Hide scrollbar for horizontal scroll on mobile */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
+/* Focus visible styles for better keyboard accessibility */
+*:focus-visible {
+  outline: 2px solid #3A643B;
+  outline-offset: 2px;
+}
+
+/* Responsive utilities */
+@media (max-width: 768px) {
+  .tab-navigation {
+    overflow-x: auto;
+  }
+}
