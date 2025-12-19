@@ -1,18 +1,16 @@
 import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { Link } from 'react-router-dom'
-import Card from '../components/Card'
-import Modal from '../components/Modal'
+import { ChevronDown } from 'lucide-react'
 import { products } from '../data/sample'
 import { copyToClipboard } from '../utils/clipboard'
 
 export default function ReferralTool() {
   const [selectedProduct, setSelectedProduct] = useState<typeof products[0] | null>(null)
+  const [showCoupon, setShowCoupon] = useState(false)
 
-  const handleCopyLink = async () => {
+  const handleGet = () => {
     if (selectedProduct) {
-      const success = await copyToClipboard(selectedProduct.link)
-      alert(success ? 'Link copied to clipboard!' : 'Failed to copy link')
+      setShowCoupon(true)
     }
   }
 
@@ -29,106 +27,87 @@ export default function ReferralTool() {
         <title>Referral Tool - Amrutam Affiliate</title>
         <meta name="description" content="Create and manage your affiliate referral links" />
       </Helmet>
-      <div className="p-6 space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-brand-dark">Referral Tool</h1>
-          <p className="text-brand-gray mt-1">Create and manage your affiliate links</p>
-        </div>
+      <div className="p-8 space-y-6 bg-brand-light min-h-screen">
+        {/* Product Link/Coupon Section */}
+        <div className="bg-white rounded-lg p-8 max-w-4xl">
+          <h2 className="text-xl font-semibold text-[#333448] mb-6" style={{ fontFamily: 'Nunito, sans-serif' }}>
+            Product Link/Coupon
+          </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {products.map((product) => (
-            <Card
-              key={product.id}
-              className="cursor-pointer hover:shadow-md transition-shadow"
-              onClick={() => setSelectedProduct(product)}
-            >
-              <img
-                src={product.image}
-                alt={product.title}
-                className="w-full h-40 object-cover rounded mb-3"
-              />
-              <h3 className="font-semibold text-brand-dark">{product.title}</h3>
-              <p className="text-xs text-brand-gray mt-1">Coupon: {product.coupon}</p>
-              <div className="flex gap-2 mt-3">
-                <Link
-                  to={`/affiliate/product/${product.id}`}
-                  className="flex-1 px-3 py-2 bg-brand-green bg-opacity-10 text-brand-green rounded hover:bg-opacity-20 transition-colors text-center text-sm font-medium"
-                >
-                  View
-                </Link>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setSelectedProduct(product)
+          <div className="space-y-4">
+            {/* Product Selection Dropdown */}
+            <div>
+              <label className="block text-sm font-medium text-[#333448] mb-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
+                Enter the name of Product <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <select
+                  value={selectedProduct?.id || ''}
+                  onChange={(e) => {
+                    const product = products.find((p) => p.id === e.target.value)
+                    setSelectedProduct(product || null)
+                    setShowCoupon(false)
                   }}
-                  className="flex-1 px-3 py-2 bg-brand-light text-brand-dark rounded hover:bg-brand-border transition-colors text-sm font-medium"
+                  className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-green/20 text-[#333448] appearance-none"
+                  style={{ fontFamily: 'Nunito, sans-serif', fontSize: '14px' }}
                 >
-                  Select
-                </button>
+                  <option value="">Select a product</option>
+                  {products.map((product) => (
+                    <option key={product.id} value={product.id}>
+                      {product.title}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" size={20} />
               </div>
-            </Card>
-          ))}
+              <p className="text-sm text-gray-400 mt-2" style={{ fontFamily: 'Nunito, sans-serif' }}>
+                Enter or Select the name of product you want to refer to your patient.
+              </p>
+            </div>
+
+            {/* Get Button */}
+            <div className="flex justify-end">
+              <button
+                onClick={handleGet}
+                disabled={!selectedProduct}
+                className="px-12 py-3 bg-brand-green text-white rounded-lg hover:bg-brand-green/90 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ fontFamily: 'Nunito, sans-serif' }}
+              >
+                Get
+              </button>
+            </div>
+          </div>
         </div>
 
-        <Modal
-          open={!!selectedProduct}
-          onClose={() => setSelectedProduct(null)}
-          title="Referral Link"
-        >
-          {selectedProduct && (
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-brand-dark mb-1">
-                  Product
-                </label>
-                <input
-                  type="text"
-                  value={selectedProduct.title}
-                  readOnly
-                  className="w-full px-3 py-2 bg-brand-light border border-brand-border rounded text-brand-dark"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-brand-dark mb-1">
-                  Link
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={selectedProduct.link}
-                    readOnly
-                    className="flex-1 px-3 py-2 bg-brand-light border border-brand-border rounded text-brand-dark text-sm"
-                  />
-                  <button
-                    onClick={handleCopyLink}
-                    className="px-4 py-2 bg-brand-green text-white rounded hover:opacity-90 transition-opacity font-medium text-sm"
-                  >
-                    Copy
-                  </button>
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-brand-dark mb-1">
-                  Coupon Code
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={selectedProduct.coupon}
-                    readOnly
-                    className="flex-1 px-3 py-2 bg-brand-light border border-brand-border rounded text-brand-dark text-sm"
-                  />
-                  <button
-                    onClick={handleCopyCoupon}
-                    className="px-4 py-2 bg-brand-green text-white rounded hover:opacity-90 transition-opacity font-medium text-sm"
-                  >
-                    Copy
-                  </button>
-                </div>
-              </div>
+        {/* Cart Discount Section */}
+        {showCoupon && selectedProduct && (
+          <div className="bg-white rounded-lg p-8 max-w-4xl">
+            <h3 className="text-xl font-semibold text-[#333448] mb-6" style={{ fontFamily: 'Nunito, sans-serif' }}>
+              Cart Discount
+            </h3>
+
+            <div className="flex gap-4 items-center mb-4">
+              <input
+                type="text"
+                value={selectedProduct.coupon}
+                readOnly
+                className="flex-1 px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-[#333448] font-medium"
+                style={{ fontFamily: 'Nunito, sans-serif' }}
+              />
+              <button
+                onClick={handleCopyCoupon}
+                className="px-12 py-3 bg-brand-green text-white rounded-lg hover:bg-brand-green/90 transition-colors font-semibold"
+                style={{ fontFamily: 'Nunito, sans-serif' }}
+              >
+                Copy
+              </button>
             </div>
-          )}
-        </Modal>
+
+            <p className="text-sm text-gray-600 italic" style={{ fontFamily: 'Nunito, sans-serif' }}>
+              <span className="font-semibold">Note:</span> Share this Link/Coupon with your patient. For every purchase someone makes using your Link/Coupon. You get credit.
+            </p>
+          </div>
+        )}
       </div>
     </>
   )
